@@ -18,4 +18,8 @@
 
   $todo = new Todo($db);
 
+  function intvalFunction($i){
+    return intval($i);
+  }
+
 ?>
