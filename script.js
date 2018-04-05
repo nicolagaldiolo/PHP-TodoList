@@ -1,7 +1,17 @@
 $(document).ready(function(){
+  var checkBoxes = $('.checkAllBoxes');
+  
   $('#selectAllBoxes').click(function(){
-      var checkBoxes = $('.checkAllBoxes');
       checkBoxes.prop("checked", !checkBoxes.prop("checked"));
-      $('.checkAction').toggle();
   });
+
+  $('.form-check-input').change(function() {
+    if ($('.form-check-input').is(':checked')) {
+      $('.checkAction').show();
+    }else{
+      $('.checkAction').hide();
+    }
+  });
+
+
 });

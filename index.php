@@ -60,7 +60,7 @@
       <div class="py-5 text-center">
         <img class="d-block mx-auto mb-4" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
         <h2>PHP-TodoList in OOP</h2>
-        <p class="lead">Devi svolgere ancora <?php echo $todo->getAll()['result']; ?> todo</p>
+        <!--<p class="lead">XXXXXXXXXXXXX Devi svolgere ancora <?php //echo $todo->getAll()['result']; ?> todo</p>-->
       </div>
 
       <div class="row">
@@ -68,7 +68,7 @@
           <div class="mb-3">
             <?php echo $todo->getAll()['data']; ?>
           </div>
-          <div class="mb-3">
+          <!--<div class="mb-3">
             <nav aria-label="Page navigation example">
               <ul class="pagination">
                 <li class="page-item"><a class="page-link" href="#">Previous</a></li>
@@ -78,7 +78,7 @@
                 <li class="page-item"><a class="page-link" href="#">Next</a></li>
               </ul>
             </nav>
-          </div>
+          </div>-->
 
           <form action="add.php" class="card p-2" method="post">
             <div class="input-group">
