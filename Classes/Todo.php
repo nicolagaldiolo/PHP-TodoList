@@ -2,8 +2,8 @@
 class Todo{
     
     private $db;
-    protected $id = null;
-    protected $status = null;
+    private $id = null;
+    private $status = null;
 
     function __construct($DB_CON){
       $this->db = $DB_CON;
@@ -27,25 +27,13 @@ class Todo{
 
     public function getAll(){
       
-      $item_for_page = 3;
-      $pager_count = $filter_page = 0;
+      $item_for_page = 2;
+      $pager_count = 0;
       
       try {
-        $query = "SELECT id, todo, completed, created FROM todo ORDER BY created DESC";
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        $num_row = $stmt->rowCount();
-
         
-        $pager_count = ceil($num_row / $item_for_page);
-
-        //echo '<hr>';
-
-        //echo 'Elementi per pagina: ' , var_dump($item_for_page), '<br>';
-        echo 'Pagine totali: ' , var_dump($pager_count), '<br>';
-
         $filter_page = 0;
-        if(isset($_GET['page']) && $_GET['page'] > 0){
+        if(isset($_GET['page']) && intval($_GET['page']) > 0){
           $page_current = intval($_GET['page']);
           $filter_page = ($page_current * $item_for_page) - $item_for_page;
         }
@@ -54,18 +42,6 @@ class Todo{
         $stmt = $this->db->prepare($query);
         $stmt->execute();
         
-        
-        function createPath($params){
-          $current_url = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-          if($_SERVER['QUERY_STRING']){
-            $concat_prm = "&";
-          }else{
-            $concat_prm = "?";
-          }
-          
-          return "http://" . $current_url . $concat_prm . $params;
-        }
-
 
         // display each returned rows
         $list = "";
@@ -74,13 +50,10 @@ class Todo{
           
           if( $completed == 1) {
             $todo = "<strike>{$todo}</strike>";
-            $action = "<a class=\"btn btn-link\" href=\"/?id={$id}&std=0\"><i class=\"fas fa-check-circle fa-lg\"></i></a>";
+            $action = "<a class=\"btn btn-link\" href=\"?id={$id}&std=0\"><i class=\"fas fa-check-circle fa-lg\"></i></a>";
           }else{
-            $action = "<a class=\"btn btn-link\" href=\"/?id={$id}&std=1\"><i class=\"far fa-check-circle fa-lg\"></i></a>";
+            $action = "<a class=\"btn btn-link\" href=\"?id={$id}&std=1\"><i class=\"far fa-check-circle fa-lg\"></i></a>";
           }
-
-          $deletePath = createPath("id=" . $id . "&delete");
-          
 
           $list .= <<<HTML
             <li class="list-group-item d-flex justify-content-between lh-condensed align-items-center">
@@ -95,62 +68,70 @@ class Todo{
               </div>
               <div>
                 {$action}
-                <a class="btn btn-link" href="{$deletePath}"><i class="far fa-trash-alt fa-lg"></i></a>
+                <a class="btn btn-link" href="?id={$id}&delete"><i class="far fa-trash-alt fa-lg"></i></a>
               </div>
             </li>
 HTML;
         }
 
         $html = <<<HTML
-          <form method="POST">
-            <ul>
-              {$list}
-              <li class="list-group-item d-flex justify-content-between lh-condensed align-items-center list-group-item-secondary">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" value="" id="selectAllBoxes">
-                  <label class="form-check-label" for="selectAllBoxes">Seleziona tutti</label>
-                </div>
-                <div class="checkAction" style="display:none;">
-                  <button type="submit" class="btn btn-link" name="std" value="1"><i class="fas fa-check-circle fa-lg"></i></button>
-                  <button type="submit" class="btn btn-link" name="std" value="0"><i class="far fa-check-circle fa-lg"></i></button>
-                  <button type="submit" class="btn btn-link" name="delete"><i class="far fa-trash-alt fa-lg"></i></button>
-                </div>
-              </li>
-            </ul>
-          </form>
+          <div class="mb-3">
+            
+            
+            <form method="POST">
+              <ul>
+                {$list}
+                <li class="list-group-item d-flex justify-content-between lh-condensed align-items-center list-group-item-secondary">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="selectAllBoxes">
+                    <label class="form-check-label" for="selectAllBoxes">Seleziona tutti</label>
+                  </div>
+                  <div class="checkAction" style="display:none;">
+                    <button type="submit" class="btn btn-link" name="std" value="1"><i class="fas fa-check-circle fa-lg"></i></button>
+                    <button type="submit" class="btn btn-link" name="std" value="0"><i class="far fa-check-circle fa-lg"></i></button>
+                    <button type="submit" class="btn btn-link" name="delete"><i class="far fa-trash-alt fa-lg"></i></button>
+                  </div>
+                </li>
+              </ul>
+            </form>
+          </div>
 HTML;
+
+        //$pager = new Paginate($this->id);
+        //$html .= $pager->pagingLink();
+
+
+        $query = "SELECT id, todo, completed, created FROM todo ORDER BY created DESC";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        $num_row = $stmt->rowCount();
+
+
+        $pager_count = ceil($num_row / $item_for_page);
+
+
+
+
         if($pager_count > 1){
           $item_page = "";
           for($i=1; $i<=$pager_count; $i++){
-            $item_page .= "<li class=\"\"><a href=\"?page={$i}\">{$i}</a></li>";
+            $active = ( (!isset($page_current) && $i==1) || (isset($page_current) && $page_current == $i)) ? " active" : "";
+            $item_page .= "<li class=\"page-item{$active}\"><a class=\"page-link\" href=\"/{$i}/\">{$i}</a></li>";
           }
 
           $html .= <<<HTML
-          <nav aria-label="Page navigation example">
+            <div class="mb-3">
+              <nav aria-label="Page navigation example">
                 <ul class="pagination">
-                  
                   {$item_page}
                   <!--<li class="page-item"><a class="page-link" href="#">Next</a></li>-->
                 </ul>
               </nav>
+            </div>
 HTML;
         }
 
-        /*
-        <% for ( int i = 1; i <= nPage; i++ ) { 
-								if ( Math.abs(aPage - i) < 3 ){
-								%>
-								<li<% if (aPage == i) { %> class="active"<% } %>><a href="<%= url %><%= i %>"><%= i %></a></li>
-							<% }
-              } %>
-              */
-
-        $data = array(
-          'result' => $num_row,
-          'data'   => $html
-        );
-
-        return $data;
+        return $html;
 
       }catch(PDOException $e){
         echo "Error: " . $e->getMessage();

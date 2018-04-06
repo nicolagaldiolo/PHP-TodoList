@@ -1,6 +1,8 @@
 <?php
   include 'config.php';
   
+  //echo var_dump($_GET);
+
   /* Ricevo via GET il singolo ID da aggiornare */
   if(isset($_GET['id'])){
     $todo_id = intval($_GET['id']);
@@ -50,7 +52,7 @@
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script defer src="https://use.fontawesome.com/releases/v5.0.9/js/all.js" integrity="sha384-8iPTk2s/jMVj81dnzb/iFR2sdA7u06vHJyyLlAd4snFpCl/SnyUjRrbdJsw1pGIl" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/style.css">
   
   </head>
 
@@ -59,15 +61,13 @@
     <div class="container">
       <div class="py-5 text-center">
         <img class="d-block mx-auto mb-4" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-        <h2>PHP-TodoList in OOP</h2>
-        <!--<p class="lead">XXXXXXXXXXXXX Devi svolgere ancora <?php //echo $todo->getAll()['result']; ?> todo</p>-->
+        <h2>PHP-TodoList</h2>
+        <p class="lead">PHP-TodoList in Object Orientied Programming</p>
       </div>
 
       <div class="row">
         <div class="col-md-12 mb-4">
-          <div class="mb-3">
-            <?php echo $todo->getAll()['data']; ?>
-          </div>
+          <?php echo $todo->getAll(); ?>
           <!--<div class="mb-3">
             <nav aria-label="Page navigation example">
               <ul class="pagination">
@@ -80,7 +80,7 @@
             </nav>
           </div>-->
 
-          <form action="add.php" class="card p-2" method="post">
+          <form action="/add.php" class="card p-2" method="post">
             <div class="input-group">
               <input type="text" class="form-control" name="todo" placeholder="Add new todo">
               <div class="input-group-append">

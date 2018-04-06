@@ -1,7 +1,9 @@
 <?php
 
   // Include class
-  include_once('Classes/Todo.php');
+  include_once('classes/Todo.php');
+  include_once('classes/Paging.php');
+  include_once('utility/functions.php');
 
   $user = 'root';
   $password = '';
@@ -17,9 +19,6 @@
   }
 
   $todo = new Todo($db);
-
-  function intvalFunction($i){
-    return intval($i);
-  }
+  $paging = new Todo($db);
 
 ?>
