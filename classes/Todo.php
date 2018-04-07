@@ -138,9 +138,9 @@ HTML;
           $stmt->execute();
 
         }else{
-          $query = "DELETE FROM todo WHERE id = ?";
+          $query = "DELETE FROM todo WHERE id = :id";
           $stmt = $this->db->prepare($query);
-          $stmt->bindParam(1,$this->id);
+          $stmt->bindParam(':id',$this->id);
           $stmt->execute();
         }
         return true;
