@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Creato il: Mar 31, 2018 alle 17:36
+-- Creato il: Apr 07, 2018 alle 11:11
 -- Versione del server: 5.7.20
 -- Versione PHP: 7.1.7
 
@@ -40,10 +40,12 @@ CREATE TABLE `todo` (
 --
 
 INSERT INTO `todo` (`id`, `todo`, `completed`, `created`) VALUES
-(1, 'Comprare il latte', 0, '2018-03-31 17:35:21'),
-(2, 'Lavare la moto', 0, '2018-03-31 17:36:05'),
-(3, 'Fare la lavatrice', 0, '2018-03-31 17:36:05'),
-(4, 'Portare fuori il cane', 0, '2018-03-31 17:36:21');
+(1, 'Buy the milk', 1, '2018-04-07 11:08:16'),
+(2, 'Wash the car', 1, '2018-04-07 11:08:18'),
+(3, 'Do the laundry', 1, '2018-04-07 11:08:36'),
+(4, 'Wash the dishes', 1, '2018-04-07 11:08:50'),
+(5, 'Adjust the bicycle', 0, '2018-04-07 11:09:28'),
+(6, 'Do the shopping', 0, '2018-04-07 11:10:00');
 
 --
 -- Indici per le tabelle scaricate
@@ -63,7 +65,7 @@ ALTER TABLE `todo`
 -- AUTO_INCREMENT per la tabella `todo`
 --
 ALTER TABLE `todo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

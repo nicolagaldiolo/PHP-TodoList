@@ -19,6 +19,5 @@
   }
 
   $todo = new Todo($db);
-  $paging = new Todo($db);
 
 ?>

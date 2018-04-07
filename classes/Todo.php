@@ -1,9 +1,10 @@
 <?php
+
 class Todo{
-    
     private $db;
     private $id = null;
     private $status = null;
+    private $item_for_page = 4;
 
     function __construct($DB_CON){
       $this->db = $DB_CON;
@@ -27,22 +28,12 @@ class Todo{
 
     public function getAll(){
       
-      $item_for_page = 2;
-      $pager_count = 0;
+      $paging = new Paginate($this->db, $this->item_for_page);
       
       try {
         
-        $filter_page = 0;
-        if(isset($_GET['page']) && intval($_GET['page']) > 0){
-          $page_current = intval($_GET['page']);
-          $filter_page = ($page_current * $item_for_page) - $item_for_page;
-        }
-
-        $query = "SELECT id, todo, completed, created FROM todo ORDER BY created DESC LIMIT {$filter_page}, {$item_for_page}";
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
+        $stmt = $paging->Execute("SELECT id, todo, completed, created FROM todo ORDER BY completed ASC, created DESC");
         
-
         // display each returned rows
         $list = "";
         while($result = $stmt->fetch(PDO::FETCH_ASSOC)){
@@ -74,63 +65,34 @@ class Todo{
 HTML;
         }
 
+        if($list != ''){
+          $list .= <<<HTML
+            <li class="list-group-item d-flex justify-content-between lh-condensed align-items-center list-group-item-secondary">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="selectAllBoxes">
+                <label class="form-check-label" for="selectAllBoxes">Select All</label>
+              </div>
+              <div class="checkAction" style="display:none;">
+                <button type="submit" class="btn btn-link" name="std" value="1"><i class="fas fa-check-circle fa-lg"></i></button>
+                <button type="submit" class="btn btn-link" name="std" value="0"><i class="far fa-check-circle fa-lg"></i></button>
+                <button type="submit" class="btn btn-link" name="delete"><i class="far fa-trash-alt fa-lg"></i></button>
+              </div>
+            </li>
+HTML;
+        }
+
         $html = <<<HTML
           <div class="mb-3">
-            
-            
             <form method="POST">
               <ul>
                 {$list}
-                <li class="list-group-item d-flex justify-content-between lh-condensed align-items-center list-group-item-secondary">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="selectAllBoxes">
-                    <label class="form-check-label" for="selectAllBoxes">Seleziona tutti</label>
-                  </div>
-                  <div class="checkAction" style="display:none;">
-                    <button type="submit" class="btn btn-link" name="std" value="1"><i class="fas fa-check-circle fa-lg"></i></button>
-                    <button type="submit" class="btn btn-link" name="std" value="0"><i class="far fa-check-circle fa-lg"></i></button>
-                    <button type="submit" class="btn btn-link" name="delete"><i class="far fa-trash-alt fa-lg"></i></button>
-                  </div>
-                </li>
               </ul>
             </form>
           </div>
 HTML;
 
-        //$pager = new Paginate($this->id);
-        //$html .= $pager->pagingLink();
-
-
-        $query = "SELECT id, todo, completed, created FROM todo ORDER BY created DESC";
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        $num_row = $stmt->rowCount();
-
-
-        $pager_count = ceil($num_row / $item_for_page);
-
-
-
-
-        if($pager_count > 1){
-          $item_page = "";
-          for($i=1; $i<=$pager_count; $i++){
-            $active = ( (!isset($page_current) && $i==1) || (isset($page_current) && $page_current == $i)) ? " active" : "";
-            $item_page .= "<li class=\"page-item{$active}\"><a class=\"page-link\" href=\"/{$i}/\">{$i}</a></li>";
-          }
-
-          $html .= <<<HTML
-            <div class="mb-3">
-              <nav aria-label="Page navigation example">
-                <ul class="pagination">
-                  {$item_page}
-                  <!--<li class="page-item"><a class="page-link" href="#">Next</a></li>-->
-                </ul>
-              </nav>
-            </div>
-HTML;
-        }
-
+        $html .= $paging->getPagingLink();
+        
         return $html;
 
       }catch(PDOException $e){
