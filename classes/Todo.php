@@ -10,6 +10,14 @@ class Todo{
       $this->db = $DB_CON;
     }
 
+    private function getIdCollecton($arr){
+      $collection = array();
+      foreach($arr AS $key=>$value){
+        $collection[':id'.$key] = $value;
+      }
+      return $collection;
+    }
+
     public function setId($id){
       $this->id = $id;
     }
@@ -32,7 +40,7 @@ class Todo{
       
       try {
         
-        $stmt = $paging->Execute("SELECT id, todo, completed, created FROM todo ORDER BY completed ASC, created DESC");
+        $stmt = $paging->Execute("SELECT id, todo, completed, created FROM todo ORDER BY created DESC");
         
         // display each returned rows
         $list = "";
@@ -117,13 +125,22 @@ HTML;
     public function deleteTodo(){
       try{
         if(is_array($this->id)){
-          $query = "DELETE FROM todo WHERE id IN (" . implode(',', $this->id) . ")";
+          
+          $idCollection = $this->getIdCollecton($this->id);
+
+          $query = "DELETE FROM todo WHERE id IN (" . implode(',', array_keys($idCollection)) . ")";
           $stmt = $this->db->prepare($query);
+          
+          foreach($idCollection as $key=>&$value){//bindParam ha bisogno che il valore venga passato per referenza
+            $stmt->bindParam($key,$value);  
+          }
+
           $stmt->execute();
+
         }else{
-          $query = "DELETE FROM todo WHERE id = :id";
+          $query = "DELETE FROM todo WHERE id = ?";
           $stmt = $this->db->prepare($query);
-          $stmt->bindParam(':id',$this->id);
+          $stmt->bindParam(1,$this->id);
           $stmt->execute();
         }
         return true;
@@ -136,8 +153,16 @@ HTML;
     public function updateTodo(){
       try{
         if(is_array($this->id)){
-          $query = "UPDATE todo SET completed = {$this->status} WHERE id IN (" . implode(',', $this->id) . ")";
+
+          $idCollection = $this->getIdCollecton($this->id);
+          
+          $query = "UPDATE todo SET completed = :status WHERE id IN (" . implode(',', array_keys($idCollection)) . ")";
           $stmt = $this->db->prepare($query);
+          $stmt->bindParam(':status',$this->status);
+          
+          foreach($idCollection as $key=>&$value){//bindParam ha bisogno che il valore venga passato per referenza
+            $stmt->bindParam($key,$value);  
+          }
           $stmt->execute();
           
         }else{
